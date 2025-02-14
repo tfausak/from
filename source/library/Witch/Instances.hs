@@ -207,16 +207,9 @@ instance TryFrom.TryFrom Int.Int32 Word where
 instance TryFrom.TryFrom Int.Int32 Natural.Natural where
   tryFrom = Utility.eitherTryFrom fromNonNegativeIntegral
 
--- | Uses 'fromIntegral' when the input is between -16,777,215 and 16,777,215
--- inclusive.
+-- | TODO
 instance TryFrom.TryFrom Int.Int32 Float where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s < -maxFloat
-      then Left Exception.Underflow
-      else
-        if s > maxFloat
-          then Left Exception.Overflow
-          else Right $ fromIntegral s
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
 -- | Uses 'fromIntegral'.
 instance From.From Int.Int32 Double where
@@ -272,27 +265,13 @@ instance TryFrom.TryFrom Int.Int64 Natural.Natural where
   tryFrom =
     Utility.eitherTryFrom $ \s -> TryFrom.tryFrom (From.from s :: Integer)
 
--- | Uses 'fromIntegral' when the input is between -16,777,215 and 16,777,215
--- inclusive.
+-- | TODO
 instance TryFrom.TryFrom Int.Int64 Float where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s < -maxFloat
-      then Left Exception.Underflow
-      else
-        if s > maxFloat
-          then Left Exception.Overflow
-          else Right $ fromIntegral s
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
--- | Uses 'fromIntegral' when the input is between -9,007,199,254,740,991 and
--- 9,007,199,254,740,991 inclusive.
+-- | TODO
 instance TryFrom.TryFrom Int.Int64 Double where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s < -maxDouble
-      then Left Exception.Underflow
-      else
-        if s > maxDouble
-          then Left Exception.Overflow
-          else Right $ fromIntegral s
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
 -- Int
 
@@ -340,30 +319,13 @@ instance TryFrom.TryFrom Int Word where
 instance TryFrom.TryFrom Int Natural.Natural where
   tryFrom = Utility.eitherTryFrom fromNonNegativeIntegral
 
--- | Uses 'fromIntegral' when the input is between -16,777,215 and 16,777,215
--- inclusive.
+-- | TODO
 instance TryFrom.TryFrom Int Float where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s < -maxFloat
-      then Left Exception.Underflow
-      else
-        if s > maxFloat
-          then Left Exception.Overflow
-          else Right $ fromIntegral s
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
--- | Uses 'fromIntegral' when the input is between -9,007,199,254,740,991 and
--- 9,007,199,254,740,991 inclusive.
+-- | TODO
 instance TryFrom.TryFrom Int Double where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if toInteger (maxBound :: Int) <= maxDouble
-      then Right $ fromIntegral s
-      else
-        if s < -maxDouble
-          then Left Exception.Underflow
-          else
-            if s > maxDouble
-              then Left Exception.Overflow
-              else Right $ fromIntegral s
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
 -- Integer
 
@@ -416,27 +378,17 @@ instance TryFrom.TryFrom Integer Natural.Natural where
   tryFrom = Utility.eitherTryFrom $
     \s -> if s < 0 then Left Exception.Underflow else Right $ fromInteger s
 
--- | Uses 'fromIntegral' when the input is between -16,777,215 and 16,777,215
--- inclusive.
+-- | TODO
 instance TryFrom.TryFrom Integer Float where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s < -maxFloat
-      then Left Exception.Underflow
-      else
-        if s > maxFloat
-          then Left Exception.Overflow
-          else Right $ fromIntegral s
+  tryFrom = Utility.eitherTryFrom $ \s -> case fromInteger s of
+    t | s == truncate t -> Right t
+    _ -> Left Exception.LossOfPrecision
 
--- | Uses 'fromIntegral' when the input is between -9,007,199,254,740,991 and
--- 9,007,199,254,740,991 inclusive.
+-- | TODO
 instance TryFrom.TryFrom Integer Double where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s < -maxDouble
-      then Left Exception.Underflow
-      else
-        if s > maxDouble
-          then Left Exception.Overflow
-          else Right $ fromIntegral s
+  tryFrom = Utility.eitherTryFrom $ \s -> case fromInteger s of
+    t | s == truncate t -> Right t
+    _ -> Left Exception.LossOfPrecision
 
 -- Word8
 
@@ -592,10 +544,9 @@ instance TryFrom.TryFrom Word.Word32 Int where
 instance From.From Word.Word32 Integer where
   from = fromIntegral
 
--- | Uses 'fromIntegral' when the input is less than or equal to 16,777,215.
+-- | TODO
 instance TryFrom.TryFrom Word.Word32 Float where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s <= maxFloat then Right $ fromIntegral s else Left Exception.Overflow
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
 -- | Uses 'fromIntegral'.
 instance From.From Word.Word32 Double where
@@ -649,18 +600,13 @@ instance TryFrom.TryFrom Word.Word64 Int where
 instance From.From Word.Word64 Integer where
   from = fromIntegral
 
--- | Uses 'fromIntegral' when the input is less than or equal to 16,777,215.
+-- | TODO
 instance TryFrom.TryFrom Word.Word64 Float where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s <= maxFloat then Right $ fromIntegral s else Left Exception.Overflow
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
--- | Uses 'fromIntegral' when the input is less than or equal to
--- 9,007,199,254,740,991.
+-- | TODO
 instance TryFrom.TryFrom Word.Word64 Double where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s <= maxDouble
-      then Right $ fromIntegral s
-      else Left Exception.Overflow
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
 -- Word
 
@@ -708,18 +654,13 @@ instance TryFrom.TryFrom Word Int where
 instance From.From Word Integer where
   from = fromIntegral
 
--- | Uses 'fromIntegral' when the input is less than or equal to 16,777,215.
+-- | TODO
 instance TryFrom.TryFrom Word Float where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s <= maxFloat then Right $ fromIntegral s else Left Exception.Overflow
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
--- | Uses 'fromIntegral' when the input is less than or equal to
--- 9,007,199,254,740,991.
+-- | TODO
 instance TryFrom.TryFrom Word Double where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if (toInteger (maxBound :: Word) <= maxDouble) || (s <= maxDouble)
-      then Right $ fromIntegral s
-      else Left Exception.Overflow
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
 -- Natural
 
@@ -767,18 +708,13 @@ instance TryFrom.TryFrom Natural.Natural Int where
 instance From.From Natural.Natural Integer where
   from = fromIntegral
 
--- | Uses 'fromIntegral' when the input is less than or equal to 16,777,215.
+-- | TODO
 instance TryFrom.TryFrom Natural.Natural Float where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s <= maxFloat then Right $ fromIntegral s else Left Exception.Overflow
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
--- | Uses 'fromIntegral' when the input is less than or equal to
--- 9,007,199,254,740,991.
+-- | TODO
 instance TryFrom.TryFrom Natural.Natural Double where
-  tryFrom = Utility.eitherTryFrom $ \s ->
-    if s <= maxDouble
-      then Right $ fromIntegral s
-      else Left Exception.Overflow
+  tryFrom = Utility.eitherTryFrom $ TryFrom.tryFrom @Integer . From.from
 
 -- Float
 
@@ -802,15 +738,9 @@ instance TryFrom.TryFrom Float Int.Int64 where
 instance TryFrom.TryFrom Float Int where
   tryFrom = Utility.tryVia @Integer
 
--- | Converts via 'Rational' when the input is between -16,777,215 and
--- 16,777,215 inclusive.
+-- | TODO
 instance TryFrom.TryFrom Float Integer where
-  tryFrom = Utility.eitherTryFrom $ \s -> case Utility.tryVia @Rational s of
-    Left e -> Left $ Exception.toException e
-    Right t
-      | t < -maxFloat -> Left $ Exception.toException Exception.Underflow
-      | t > maxFloat -> Left $ Exception.toException Exception.Overflow
-      | otherwise -> Right t
+  tryFrom = Utility.tryVia @Rational
 
 -- | Converts via 'Integer'.
 instance TryFrom.TryFrom Float Word.Word8 where
@@ -866,15 +796,9 @@ instance TryFrom.TryFrom Double Int.Int64 where
 instance TryFrom.TryFrom Double Int where
   tryFrom = Utility.tryVia @Integer
 
--- | Converts via 'Rational' when the input is between -9,007,199,254,740,991
--- and 9,007,199,254,740,991 inclusive.
+-- | TODO
 instance TryFrom.TryFrom Double Integer where
-  tryFrom = Utility.eitherTryFrom $ \s -> case Utility.tryVia @Rational s of
-    Left e -> Left $ Exception.toException e
-    Right t
-      | t < -maxDouble -> Left $ Exception.toException Exception.Underflow
-      | t > maxDouble -> Left $ Exception.toException Exception.Overflow
-      | otherwise -> Right t
+  tryFrom = Utility.tryVia @Rational
 
 -- | Converts via 'Integer'.
 instance TryFrom.TryFrom Double Word.Word8 where
@@ -1566,16 +1490,6 @@ fromNonNegativeIntegral ::
   (Integral s, Num t) => s -> Either Exception.ArithException t
 fromNonNegativeIntegral x =
   if x < 0 then Left Exception.Underflow else Right $ fromIntegral x
-
--- | The maximum integral value that can be unambiguously represented as a
--- 'Float'. Equal to 16,777,215.
-maxFloat :: (Num a) => a
-maxFloat = 16777215
-
--- | The maximum integral value that can be unambiguously represented as a
--- 'Double'. Equal to 9,007,199,254,740,991.
-maxDouble :: (Num a) => a
-maxDouble = 9007199254740991
 
 tryEvaluate :: (Exception.Exception e) => a -> Either e a
 tryEvaluate = Unsafe.unsafePerformIO . Exception.try . Exception.evaluate
